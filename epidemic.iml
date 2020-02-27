@@ -22,5 +22,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Tomcat 9.0.31" level="application_server_libraries" />
     <orderEntry type="library" name="SpringMVC" level="project" />
     <orderEntry type="library" name="log4j" level="project" />
+    <orderEntry type="library" name="mybatis" level="project" />
+    <orderEntry type="library" name="JDBC" level="project" />
   </component>
 </module>
