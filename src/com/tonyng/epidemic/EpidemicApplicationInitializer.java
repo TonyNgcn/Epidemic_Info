@@ -6,7 +6,7 @@ public class EpidemicApplicationInitializer extends AbstractAnnotationConfigDisp
     @Override
     protected Class<?>[] getRootConfigClasses() {
         //Spring配置类
-        return new Class[0];
+        return new Class[]{SpringConfig.class};
     }
 
     @Override
