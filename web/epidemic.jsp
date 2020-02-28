@@ -12,6 +12,7 @@
     <style type="text/css">
         #container{
             height: 500px;
+            background-image: url("img/banner.png");
         }
     </style>
 </head>
