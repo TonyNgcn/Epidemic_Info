@@ -47,6 +47,14 @@ public class MyBatisConfig {
         //设置使用的数据源
         factoryBean.setDataSource(dataSource);
 
+        //设置xml文件中类所在的包
+        factoryBean.setTypeAliasesPackage("com.tonyng.epidemic.beans");
+
+        //为了让mybatis自动把下划线分割的类名转换为驼峰表示的属性名
+        org.apache.ibatis.session.Configuration configuration=new org.apache.ibatis.session.Configuration();
+        configuration.setMapUnderscoreToCamelCase(true);
+        factoryBean.setConfiguration(configuration);
+
         //设置映射xml文件路径
         try {
             Resource[] resources=new PathMatchingResourcePatternResolver().getResources("classpath:com/tonyng/epidemic/mapper/*Mapper.xml");
@@ -56,13 +64,6 @@ public class MyBatisConfig {
             logger.error("解析映射xml文件时异常："+e.getMessage());
         }
 
-        //设置xml文件中类所在的包
-        factoryBean.setTypeAliasesPackage("com.tonyng.epidemic.beans");
-
-        //为了让mybatis自动把下划线分割的类名转换为驼峰表示的属性名
-        org.apache.ibatis.session.Configuration configuration=new org.apache.ibatis.session.Configuration();
-        configuration.setMapUnderscoreToCamelCase(true);
-        factoryBean.setConfiguration(configuration);
         return factory;
     }
 }
