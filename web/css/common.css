@@ -1,0 +1,8 @@
+.logo{
+    height: 79px;
+    background-image: url('../img/logo.png');
+    background-repeat: no-repeat;
+    font-size: 42px;
+    font-family: "微软雅黑","黑体","楷体","宋体",Arial;
+    color: orange;
+}
