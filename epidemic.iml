@@ -25,5 +25,6 @@
     <orderEntry type="library" name="mybatis" level="project" />
     <orderEntry type="library" name="JDBC" level="project" />
     <orderEntry type="library" name="JSTL" level="project" />
+    <orderEntry type="library" name="jackson" level="project" />
   </component>
 </module>

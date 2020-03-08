@@ -29,12 +29,34 @@
                 <div class="form-group">
                     <div class="input-group date col-md-4" id="datepicker" data-date-format="yyyy-mm-dd">
                         <div class="input-group-addon">数据日期</div>
-                        <input class="form-control" size="16" type="text" value="" readonly>
+                        <input class="form-control" size="16" type="text" value="" readonly id="dataDate">
                         <div class="input-group-addon">
                             <span class="add-on glyphicon glyphicon-calendar"></span>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="row">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>省份</th>
+                            <th>确诊人数</th>
+                            <th>疑似人数</th>
+                            <th>隔离人数</th>
+                            <th>治愈人数</th>
+                            <th>死亡人数</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody1">
+                    <td>湖北</td>
+                    <td><input type="text" name="affirmed" size="5" maxlength="5" class="form-control"></td>
+                    <td><input type="text" name="suspected" size="5" maxlength="5" class="form-control"></td>
+                    <td><input type="text" name="isolated" size="5" maxlength="5" class="form-control"></td>
+                    <td><input type="text" name="cured" size="5" maxlength="5" class="form-control"></td>
+                    <td><input type="text" name="dead" size="5" maxlength="5" class="form-control"></td>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -54,6 +76,7 @@
 
 <script type="text/javascript">
     $(function () {
+        //设置日期输入框的初始值和取值范围
         let dp=$("#datepicker");
         dp.datepicker({
             language:"zh-CN",
@@ -66,7 +89,23 @@
         startDate.setDate(currentDate.getDate()-31);
         dp.datepicker("setStartDate",startDate);
         dp.datepicker("setEndDate",currentDate);
+        //给日期选择框设置事件处理函数
+        dp.datepicker().on("changeDate",loadProvinceList())
+
     });
+    function loadProvinceList() {
+        //清空表格
+        let tbody1=$("#tbody1");
+        tbody1.empty();
+        //获取日期文本框中的值
+        let date=$("#dataDate").val();
+
+
+        //从服务器中获取未录入数据的省份列表
+        $.get("${pageContext.request.contextPath}/province/ajax/noDataList",{date:date},function(resp) {
+            console.info(resp)
+        },"json")
+    }
 </script>
 </body>
 </html>
