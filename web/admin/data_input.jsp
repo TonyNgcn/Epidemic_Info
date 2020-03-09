@@ -107,9 +107,6 @@
 
     });
     function loadProvinceList() {
-        //清空表格
-        let tbody1=$("#tbody1");
-        tbody1.empty();
         //获取日期文本框中的值
         let date=$("#dataDate").val();
 
@@ -123,7 +120,9 @@
         },"json")
     };
     function fillProvinceToTable(array) {
+        //清空表格
         let tbody1=$("#tbody1");
+        tbody1.empty();
         if(array && array.length>0){
             provinces=array;
             //填充表格
@@ -151,7 +150,6 @@
 
                 tbody1.append(tr);
             });
-
         }else{
             $("#msg").html("本日所有省份已录入数据")
         }
@@ -203,7 +201,7 @@
 
                 dataArray.push(obj);
             }
-            let date=$("#dataDate").val;
+            let date=$("#dataDate").val();
             let data={};
             data.date=date;
             data.array=dataArray;
@@ -215,15 +213,19 @@
                 data:JSON.stringify(data),
                 dataType:'json',
                 success:function (response) {
-                    console.info(response);
+                    if(response.code<0){
+                        //有错误
+                        alert(response.msg);
+                    }
+                    else{
+                        fillProvinceToTable(response.data);
+                    }
                 }
             })
 
         }else{
             alert("请检查你的输入，确保输入正确的数据！");
         }
-
-
     }
 </script>
 </body>
