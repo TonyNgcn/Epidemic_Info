@@ -102,9 +102,16 @@
 
 
         //从服务器中获取未录入数据的省份列表
-        $.get("${pageContext.request.contextPath}/province/ajax/noDataList",{date:date},function(resp) {
-            console.info(resp)
+        $.get("${pageContext.request.contextPath}/province/ajax/noDataList",{date:date},function(response) {
+            if(response.code<0){
+                alert(response.msg);
+            }else {
+                fillProvinceToTable(response.data);
+            }
         },"json")
+    };
+    function fillProvinceToTable(array) {
+
     }
 </script>
 </body>

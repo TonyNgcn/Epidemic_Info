@@ -14,6 +14,7 @@ public interface ProvinceMapper {
             "AND p.province_id NOT IN( " +
             "SELECT e.province_id " +
             "FROM epidemics e " +
-            "WHERE e.data_year=#{arg0} AND e.data_month=#{arg1} AND e.data_day=#{arg2})")
+            "WHERE e.data_year=#{arg0} AND e.data_month=#{arg1} AND e.data_day=#{arg2})"+
+            "ORDER BY p.province_id LIMIT 0,6")
     List<ProvinceInfo> findNoDataProvinces(short year,short month,short day);
 }
