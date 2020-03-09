@@ -26,14 +26,17 @@
                 <li class="active">数据录入</li>
             </ol>
             <div class="row">
-                <div class="form-group">
-                    <div class="input-group date col-md-4" id="datepicker" data-date-format="yyyy-mm-dd">
+                <div class="col-md-4">
+                    <div class="input-group date" id="datepicker" data-date-format="yyyy-mm-dd">
                         <div class="input-group-addon">数据日期</div>
                         <input class="form-control" size="16" type="text" value="" readonly id="dataDate">
                         <div class="input-group-addon">
                             <span class="add-on glyphicon glyphicon-calendar"></span>
                         </div>
                     </div>
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-primary" id="btnSubmit">提交<span class="glyphicon glyphicon-log-in"></span></button>
                 </div>
             </div>
             <div class="row">
@@ -58,9 +61,13 @@
                     </tbody>
                 </table>
             </div>
+            <div class="row">
+                <div id="msg"></div>
+            </div>
         </div>
     </div>
     <div class="row">
+
 
     </div>
 
@@ -77,6 +84,7 @@
 <script type="text/javascript">
     $(function () {
         //设置日期输入框的初始值和取值范围
+        var provinces=null;
         let dp=$("#datepicker");
         dp.datepicker({
             language:"zh-CN",
@@ -90,7 +98,12 @@
         dp.datepicker("setStartDate",startDate);
         dp.datepicker("setEndDate",currentDate);
         //给日期选择框设置事件处理函数
-        dp.datepicker().on("changeDate",loadProvinceList())
+        dp.datepicker().on("changeDate",loadProvinceList);
+        //装载省份列表
+        loadProvinceList();
+        //给提交按钮绑定事件处理函数
+        $("#btnSubmit").click(checkAndSubmitData);
+
 
     });
     function loadProvinceList() {
@@ -99,7 +112,6 @@
         tbody1.empty();
         //获取日期文本框中的值
         let date=$("#dataDate").val();
-
 
         //从服务器中获取未录入数据的省份列表
         $.get("${pageContext.request.contextPath}/province/ajax/noDataList",{date:date},function(response) {
@@ -111,6 +123,106 @@
         },"json")
     };
     function fillProvinceToTable(array) {
+        let tbody1=$("#tbody1");
+        if(array && array.length>0){
+            provinces=array;
+            //填充表格
+            $.each(provinces,function (index,province) {
+                let tr=$("<tr>");
+                let td=$("<td>");
+                td.text(province.provinceName);
+                tr.append(td);
+
+                td=$("<td>");
+                td.html('<input type="text" name="affirmed" size="5" maxlength="5" class="form-control" value="0">');
+                tr.append(td);
+                td=$("<td>");
+                td.html('<input type="text" name="suspected" size="5" maxlength="5" class="form-control" value="0">');
+                tr.append(td);
+                td=$("<td>");
+                td.html('<input type="text" name="isolated" size="5" maxlength="5" class="form-control" value="0">');
+                tr.append(td);
+                td=$("<td>");
+                td.html('<input type="text" name="cured" size="5" maxlength="5" class="form-control" value="0">');
+                tr.append(td);
+                td=$("<td>");
+                td.html('<input type="text" name="dead" size="5" maxlength="5" class="form-control" value="0">');
+                tr.append(td);
+
+                tbody1.append(tr);
+            });
+
+        }else{
+            $("#msg").html("本日所有省份已录入数据")
+        }
+    }
+    function checkAndSubmitData() {
+        let valid=true;
+        let affirmed=$("input[name=affirmed]");
+        let suspected=$("input[name=suspected]");
+        let isolated=$("input[name=isolated]");
+        let cured=$("input[name=cured]");
+        let dead=$("input[name=dead]");
+        //判断数据是否合法
+        affirmed.each(function (index,element) {
+            if(isNaN(Number(element.value))){
+                valid=false;
+            }
+        });
+        suspected.each(function (index,element) {
+            if(isNaN(Number(element.value))){
+                valid=false;
+            }
+        });
+        isolated.each(function (index,element) {
+            if(isNaN(Number(element.value))){
+                valid=false;
+            }
+        });
+        cured.each(function (index,element) {
+            if(isNaN(Number(element.value))){
+                valid=false;
+            }
+        });
+        dead.each(function (index,element) {
+            if(isNaN(Number(element.value))){
+                valid=false;
+            }
+        });
+        if(valid){
+            //可以提交
+            let dataArray=[];
+            for(let i=0;i<provinces.length;i++){
+                let obj={};
+                obj.provinceId=provinces[i].provinceId;
+                obj.affirmed=affirmed.get(i).value;
+                obj.suspected=suspected.get(i).value;
+                obj.isolated=isolated.get(i).value;
+                obj.cured=cured.get(i).value;
+                obj.dead=dead.get(i).value;
+
+                dataArray.push(obj);
+            }
+            let date=$("#dataDate").val;
+            let data={};
+            data.date=date;
+            data.array=dataArray;
+            console.info(data);
+            $.ajax({
+                url:"${pageContext.request.contextPath}/epidemicData/ajax/input",
+                type:"POST",
+                contentType:"application/json",
+                data:JSON.stringify(data),
+                dataType:'json',
+                success:function (response) {
+                    console.info(response);
+                }
+            })
+
+        }else{
+            alert("请检查你的输入，确保输入正确的数据！");
+        }
+
 
     }
 </script>
