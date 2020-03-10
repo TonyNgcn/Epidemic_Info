@@ -1,6 +1,7 @@
 package com.tonyng.epidemic.service;
 
 import com.tonyng.epidemic.beans.DailyEpidemicInfo;
+import com.tonyng.epidemic.beans.EpidemicDetailInfo;
 import com.tonyng.epidemic.beans.ProvinceInfo;
 
 import java.util.List;
@@ -13,4 +14,10 @@ public interface EpidemicService {
      * @return
      */
     List<ProvinceInfo> saveData(DailyEpidemicInfo dailyEpidemicInfo, Integer userId);
+
+    /**
+     * 获取最新疫情数据
+     * @return
+     */
+    List<EpidemicDetailInfo> findLatestData();
 }

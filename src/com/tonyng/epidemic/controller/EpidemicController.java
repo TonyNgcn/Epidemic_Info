@@ -1,9 +1,6 @@
 package com.tonyng.epidemic.controller;
 
-import com.tonyng.epidemic.beans.AjaxResponseInfo;
-import com.tonyng.epidemic.beans.DailyEpidemicInfo;
-import com.tonyng.epidemic.beans.ProvinceInfo;
-import com.tonyng.epidemic.beans.UserInfo;
+import com.tonyng.epidemic.beans.*;
 import com.tonyng.epidemic.service.EpidemicService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +35,23 @@ public class EpidemicController {
             //将输入的数据保存，返回为录入的省份列表
             List<ProvinceInfo> list=epidemicService.saveData(dailyEpidemicInfo,user.getUserId());
             responseInfo.setData(list);
-            responseInfo.setMsg("写入数据成功");
+            responseInfo.setMsg("success");
             responseInfo.setCode(0);
         }
+
+        return responseInfo;
+    }
+
+    @GetMapping("/ajax/latestData")
+    @ResponseBody
+    public AjaxResponseInfo findLatestData(){
+        AjaxResponseInfo responseInfo=new AjaxResponseInfo();
+
+        List<EpidemicDetailInfo> list=epidemicService.findLatestData();
+
+        responseInfo.setData(list);
+        responseInfo.setCode(0);
+        responseInfo.setMsg("success");
 
         return responseInfo;
     }
