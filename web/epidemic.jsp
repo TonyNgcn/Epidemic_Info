@@ -26,14 +26,15 @@
     <script src="${pageContext.request.contextPath}/bootstrap/js/html5shiv.min.js"></script>
     <script src="${pageContext.request.contextPath}/bootstrap/js/respond.min.js"></script>
     <![endif]-->
+    <script src="${pageContext.request.contextPath}/echarts/echarts.js" type="text/javascript"></script>
 </head>
 <body id="body1">
     <div class="container">
-        <div class="row" style="height: 500px">
-            ditu
+        <div class="row" style="height: 600px; margin-bottom: 15px;">
+            <div class="col-md-12" style="height: 600px; background-color:#fff;"></div>
         </div>
-        <div class="row" style="height: 400px;">
-            <div class="col-md-12">
+        <div class="row" style="height: 400px; overflow: auto" >
+            <div class="col-md-12" style="background-color: white">
                 <table class="table table-hover table-bordered table-striped">
                     <thead>
                         <tr>
@@ -45,11 +46,19 @@
                             <th>死亡人数</th>
                         </tr>
                     </thead>
+                    <tbody id="tbody1"></tbody>
                 </table>
             </div>
         </div>
-        <div class="row">
-            <a href="login.jsp" class="btn btn-primary">登录</a>
+        <div class="row" style="margin-top: 5px">
+            <div class="col-md-12">
+                <div id="mycharts" style="height: 500px; border: 1px solid gray; background-color:white;"></div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 15px">
+            <div class="col-md-2 col-md-offset-2">
+                <a href="login.jsp" class="btn btn-primary">登录</a>
+            </div>
         </div>
     </div>
     <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
@@ -58,13 +67,94 @@
     <script src="${pageContext.request.contextPath}/bootstrap/js/bootstrap.js"></script>
     <script type="text/javascript">
         $(function () {
+            let myCharts=echarts.init($("#mycharts").get(0));
             //发送请求获取数据
             $.get("${pageContext.request.contextPath}/epidemicData/ajax/latestData",{},function (response) {
                 console.info(response);
+                if(response.code<0){
+                    alert(response.msg)
+                }else {
+                    fillToTable(response.data);
+                    fillToChart(response.data,myCharts);
+                }
 
             },"json");
+            //初始化图表Echarts
 
+            let option={
+                title:{
+                    //标题
+                    text:"当日全国疫情柱状图",
+                    //副标题
+                    subtext: "2020-02-28"
+                },
+                legend:{//图例
+                    data:["2020-02-28"]
+                },
+                tooltip:{//触发类型trigger:'item'/'axis'/'none'
+                    trigger:'item'
+                },
+                xAxis:{
+                    data:['广东',"湖北"]
+                },
+                yAxis:{//最大刻度值 max:200
+
+                },
+                series:[{
+                    type:'bar',
+                    name:'2020-02-28',
+                    data:[300,50000]
+                }]
+            };
+            myCharts.setOption(option);
         });
+        //填充装载数据的表格
+        function fillToTable(epidemics) {
+            let tbody1=$("#tbody1");
+            tbody1.empty();
+            $.each(epidemics,function (index,epidemic) {
+                let tr=$("<tr>");
+                let td=$("<td>");
+                td.text(epidemic.provinceName);
+                tr.append(td);
+
+                td=$("<td>");
+                td.html(""+epidemic.affirmedTotal+"<span class='small''>+"+epidemic.affirmed+"</span>");
+                tr.append(td);
+
+                td=$("<td>");
+                td.html(""+epidemic.suspectedTotal+"<span class='small'>+"+epidemic.suspected+"</span>");
+                tr.append(td);
+
+                td=$("<td>");
+                td.html(""+epidemic.isolatedTotal+"<span class='small'>+"+epidemic.isolated+"</span>");
+                tr.append(td);
+
+                td=$("<td>");
+                td.html(""+epidemic.curedTotal+"<span class='small'>+"+epidemic.cured+"</span>");
+                tr.append(td);
+
+                td=$("<td>");
+                td.html(""+epidemic.deadTotal+"<span class='small'>+"+epidemic.dead+"</span>");
+                tr.append(td);
+
+                tbody1.append(tr);
+            })
+        }
+        //将服务器端返回的数据设置到图表上
+        function fillToChart(epidemics,myCharts) {
+            let provinceNames=[];
+            let affirmedTotals=[];
+            let dataYear=epidemics[0].dataYear;
+            let dataMonth=epidemics[0].dataMonth;
+            let dataDay=epidemics[0].dataDay;
+            let date=dataYear+'-'+dataMonth+'-'+dataDay;
+            $.each(epidemics,function (index,epidemic) {
+                provinceNames.push(epidemic.provinceName);
+                affirmedTotals.push(epidemic.affirmedTotal);
+            });
+
+        }
     </script>
 </body>
 </html>

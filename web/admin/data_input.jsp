@@ -103,8 +103,6 @@
         loadProvinceList();
         //给提交按钮绑定事件处理函数
         $("#btnSubmit").click(checkAndSubmitData);
-
-
     });
     function loadProvinceList() {
         //获取日期文本框中的值
@@ -118,7 +116,7 @@
                 fillProvinceToTable(response.data);
             }
         },"json")
-    };
+    }
     function fillProvinceToTable(array) {
         //清空消息
         let msg=$("#msg");
@@ -157,6 +155,7 @@
             msg.html("本日所有省份已录入数据");
         }
     }
+
     function checkAndSubmitData() {
         let valid=true;
         let affirmed=$("input[name=affirmed]");
