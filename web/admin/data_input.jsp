@@ -120,6 +120,9 @@
         },"json")
     };
     function fillProvinceToTable(array) {
+        //清空消息
+        let msg=$("#msg");
+        msg.html("");
         //清空表格
         let tbody1=$("#tbody1");
         tbody1.empty();
@@ -151,7 +154,7 @@
                 tbody1.append(tr);
             });
         }else{
-            $("#msg").html("本日所有省份已录入数据")
+            msg.html("本日所有省份已录入数据");
         }
     }
     function checkAndSubmitData() {
