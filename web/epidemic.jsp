@@ -31,7 +31,9 @@
 <body id="body1">
     <div class="container">
         <div class="row" style="height: 600px; margin-bottom: 15px;">
-            <div class="col-md-12" style="height: 600px; background-color:#fff;"></div>
+            <div class="col-md-12" style="background-color:#fff;margin-top: 5px">
+                <div id="myMap" style="height:600px;"></div>
+            </div>
         </div>
         <div class="row" style="height: 400px; overflow: auto" >
             <div class="col-md-12" style="background-color: white">
@@ -69,6 +71,7 @@
 
         //初始化图表Echarts
         var myCharts=echarts.init($("#mycharts").get(0));
+        var myMap=echarts.init(document.getElementById("myMap"));
         $(function () {
             //发送请求获取数据
             $.get("${pageContext.request.contextPath}/epidemicData/ajax/latestData",{},function (response) {
@@ -77,7 +80,7 @@
                     alert(response.msg)
                 }else {
                     fillToTable(response.data);
-                    fillToChart(response.data,myCharts);
+                    fillToChart(response.data);
                 }
             },"json");
         });
@@ -115,16 +118,21 @@
             })
         }
         //将服务器端返回的数据设置到图表上
-        function fillToChart(epidemics,myCharts) {
+        function fillToChart(epidemics) {
             let provinceNames=[];
             let affirmedTotals=[];
             let dataYear=epidemics[0].dataYear;
             let dataMonth=epidemics[0].dataMonth;
             let dataDay=epidemics[0].dataDay;
             let date=dataYear+'-'+dataMonth+'-'+dataDay;
+            let data=[];
             $.each(epidemics,function (index,epidemic) {
                 provinceNames.push(epidemic.provinceName);
                 affirmedTotals.push(epidemic.affirmedTotal);
+                var obj = {};
+                obj.name = epidemic.provinceName;
+                obj.value = epidemic.affirmedTotal;
+                data.push(obj);
             });
             let option={
                 title:{
@@ -143,7 +151,7 @@
                     data:provinceNames
                 },
                 yAxis:{//最大刻度值 max:200
-
+                    max:2000
                 },
                 series:[{
                     type:'bar',
@@ -151,8 +159,65 @@
                     data: affirmedTotals
                 }]
             };
-        myCharts.setOption(option);
+            myMap.setOption({
+                title:{
+                    subtext: date
+                },
+                series: [
+                    {
+                        name: '累计确诊人数',
+                        type: 'map',
+                        mapType: 'china',
+                        data: data
+                    }
+                ]
+            });
+            myCharts.setOption(option);
         }
+        //获取地图JSON数据，显示中国地图
+        $.get("${pageContext.request.contextPath}/echarts/china.json",{},function (chinaJson) {
+            echarts.registerMap("china",chinaJson);
+            let option={
+                title: {
+                    text: "全国确诊人数"
+                },
+                legend: {
+                    data: ["累计确诊人数"]
+                },
+                tooltip: {},
+                visualMap: {
+                    type: 'piecewise',
+                    min: 0,
+                    max: 10000,
+                    splitList: [{
+                        start: 2000,
+                        end: 100000
+                    }, {
+                        start: 1000,
+                        end: 2000
+                    }, {
+                        start: 500,
+                        end: 1000
+                    }, {
+                        start: 100,
+                        end: 500
+                    }, {
+                        start: 0,
+                        end: 100
+                    }],
+                    textStyle: {
+                        color: 'orange'
+                    }
+                },
+                series:[{
+                  name:"累计确诊人数",
+                  type:'map',
+                  mapType:'china',
+                  data:[]
+                }]
+            };
+            myMap.setOption(option);
+        },"json");
     </script>
 </body>
 </html>
