@@ -66,8 +66,10 @@
     <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
     <script src="${pageContext.request.contextPath}/bootstrap/js/bootstrap.js"></script>
     <script type="text/javascript">
+
+        //初始化图表Echarts
+        var myCharts=echarts.init($("#mycharts").get(0));
         $(function () {
-            let myCharts=echarts.init($("#mycharts").get(0));
             //发送请求获取数据
             $.get("${pageContext.request.contextPath}/epidemicData/ajax/latestData",{},function (response) {
                 console.info(response);
@@ -77,36 +79,7 @@
                     fillToTable(response.data);
                     fillToChart(response.data,myCharts);
                 }
-
             },"json");
-            //初始化图表Echarts
-
-            let option={
-                title:{
-                    //标题
-                    text:"当日全国疫情柱状图",
-                    //副标题
-                    subtext: "2020-02-28"
-                },
-                legend:{//图例
-                    data:["2020-02-28"]
-                },
-                tooltip:{//触发类型trigger:'item'/'axis'/'none'
-                    trigger:'item'
-                },
-                xAxis:{
-                    data:['广东',"湖北"]
-                },
-                yAxis:{//最大刻度值 max:200
-
-                },
-                series:[{
-                    type:'bar',
-                    name:'2020-02-28',
-                    data:[300,50000]
-                }]
-            };
-            myCharts.setOption(option);
         });
         //填充装载数据的表格
         function fillToTable(epidemics) {
@@ -153,7 +126,32 @@
                 provinceNames.push(epidemic.provinceName);
                 affirmedTotals.push(epidemic.affirmedTotal);
             });
+            let option={
+                title:{
+                    //标题
+                    text:"当日全国疫情柱状图",
+                    //副标题
+                    subtext: date
+                },
+                legend:{//图例
+                    data:[date]
+                },
+                tooltip:{//触发类型trigger:'item'/'axis'/'none'
+                    trigger:'item'
+                },
+                xAxis:{
+                    data:provinceNames
+                },
+                yAxis:{//最大刻度值 max:200
 
+                },
+                series:[{
+                    type:'bar',
+                    name: date,
+                    data: affirmedTotals
+                }]
+            };
+        myCharts.setOption(option);
         }
     </script>
 </body>
